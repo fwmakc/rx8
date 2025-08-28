@@ -1,10 +1,10 @@
-import { IInstruction } from '../instructions/instruction.interface';
-import { INSTRUCTIONS_SET } from '../instructions/instructions.set';
-import { IDisassembled } from './disassembled.interface';
+import { instructions } from '../instructions/data/instructions.data';
+import { IInstruction } from '../instructions/interfaces/instruction.interface';
+import { IDisassembled } from '../instructions/interfaces/disassembled.interface';
 
 export function disassemble(opcode: any): IDisassembled {
   // Ищем инструкцию исходя из байт-кода
-  const instruction: IInstruction | undefined = INSTRUCTIONS_SET.find(
+  const instruction: IInstruction | undefined = instructions.find(
     (instruction) => (opcode & instruction.mask) === instruction.pattern,
   );
 

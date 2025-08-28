@@ -1,6 +1,6 @@
-import { decode } from './cycle/decode.cycle';
-import { execute } from './cycle/execute.cycle';
-import { fetch } from './cycle/fetch.cycle';
+import { decode } from './helpers/decode.helper';
+import { execute } from './helpers/execute.helper';
+import { fetch } from './helpers/fetch.helper';
 import { ICpu } from './interfaces/cpu.interface';
 import { FONT_SET } from './interfaces/data/fontSet';
 
@@ -98,18 +98,18 @@ export class CPU {
     }
 
     // 1й шаг, fetch, обращается к текущему опкоду из памяти
-    console.log('-- fetch...', {
-      memory: this.memory,
-      PC: this.PC,
-    });
+    // console.log('-- fetch...', {
+    //   memory: this.memory,
+    //   PC: this.PC,
+    // });
     const opcode = fetch(this);
 
     // 2й шаг, decode разберёт опкод на понятный набор команд
-    console.log('-- decode... opcode', opcode);
+    // console.log('-- decode... opcode', opcode);
     const instruction = decode(opcode);
 
     // 3й шаг, выполняем инструкцию
-    console.log('-- execute... instruction', instruction);
+    // console.log('-- execute... instruction', instruction);
     execute(instruction, this);
   }
 
