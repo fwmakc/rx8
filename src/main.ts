@@ -1,24 +1,44 @@
-import './style.css';
-import typescriptLogo from './typescript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter';
+// const app = document.querySelector<HTMLButtonElement>('#app')!;
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`;
+import { CPU } from './cpu/cpu';
+import { RomBuffer } from './rom/rom';
+import { WebCpuInterface } from './cpu/interfaces/WebCpuInterface';
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
+const cpuInterface = new WebCpuInterface();
+const cpu = new CPU(cpuInterface);
+
+let timer = 0;
+
+const cycle = () => {
+  timer++;
+
+  if (timer % 5 === 0) {
+    cpu.tick();
+    timer = 0;
+  }
+
+  if (!cpu.halted) {
+    cpu.step();
+  }
+
+  setTimeout(cycle, 3);
+};
+
+async function loadRom(event: any) {
+  const rom = event.target.value;
+  console.log('-- rom', rom);
+  const response = await fetch(`./roms/${rom}`);
+  console.log('-- response', response);
+  const arrayBuffer = await response.arrayBuffer();
+  console.log('-- arrayBuffer', arrayBuffer);
+  const uint8View = new Uint8Array(arrayBuffer);
+  const romBuffer = new RomBuffer(uint8View);
+
+  cpu.interface.clearDisplay();
+  cpu.load(romBuffer);
+}
+
+const select = document.querySelector<HTMLDivElement>('select');
+select?.addEventListener('change', loadRom);
+
+cycle();
